@@ -5,7 +5,7 @@ import logging
 def configure_logging():
     """Настройка логирования."""
     logging.basicConfig(
-        filename='WBA-0.txt',
+        filename='WoTA.txt',
         level=logging.DEBUG,
         format='%(asctime)s - %(levelname)s - %(message)s',
         encoding='utf-8'
