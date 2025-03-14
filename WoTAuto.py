@@ -7,7 +7,8 @@ import psutil
 import sys
 from selenium import webdriver
 from selenium.webdriver.edge.options import Options
-from selenium.webdriver.edge.service import Service
+from selenium.webdriver.common.by import By
+from selenium.common.exceptions import NoSuchElementException
 import time
 
 # Константы
@@ -42,11 +43,8 @@ def start_edge_with_debugging() -> None:
 def connect_to_edge_with_selenium():
     """Подключается к Edge через Selenium в режиме отладки."""
     try:
-        # Настройка опций для подключения к уже запущенному Edge
         edge_options = Options()
         edge_options.add_experimental_option("debuggerAddress", f"127.0.0.1:{iREMOTE_DEBUGGING_PORT}")
-        
-        # Создание WebDriver
         driver = webdriver.Edge(options=edge_options)
         log_v2("Successfully connected to Edge via Selenium", "info")
         return driver
@@ -81,6 +79,19 @@ if __name__ == "__main__":
         log_v2("Successfully navigated to the target URL", "info")
     except Exception as e:
         log_v2(f"Failed to navigate to URL: {str(e)}", "error")
+        driver.quit()
+        sys.exit(1)
+    
+    # Проверка наличия кнопки "Войти"
+    try:
+        login_button = driver.find_element(By.XPATH, '//span[@class="big-button_text" and text()="Войти"]')
+        if login_button:
+            print("Авторизуйтесь на сайте")
+            log_v2("Login button found. Exiting script.", "info")
+            driver.quit()
+            sys.exit(0)
+    except NoSuchElementException:
+        log_v2("Login button not found. Continuing script.", "info")
     
     # Ожидание завершения работы
     input("Press Enter to exit...")
